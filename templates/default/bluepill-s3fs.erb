@@ -1,0 +1,16 @@
+Bluepill.application("s3fs") do |app|
+  <% @mounted_directories.each do |mount| %>
+    app.process("s3fs-<%= mount[:path].gsub('/', '_') %>") do |process|
+      process.pid_file = "/var/run/s3fs/s3fs-<%= mount[:path].gsub('/', '_') %>"
+      process.working_dir = "/tmp"
+      process.start_command "s3fs -f <%= mount[:bucket] %> <%= mount[:path] %> -o " +
+        "allow_other,url=https://s3.amazonaws.com,passwd_file=/etc/passwd-s3fs," +
+        "use_cache=<%= mount[:tmp_store] || "/tmp/s3_cache" %>,retries=20,dev," +
+        "suid<%= ",noupload" if mount[:no_upload] %>,<%= mount[:read_only] ? "ro" : "rw" %>"
+      process.stop_command "umount <%= mount[:path] %>"
+      process.daemonize = true
+
+      process.checks :mem_usage, :every => 5.seconds, :below => <%= mount[:maxmemory] || @maxmemory.to_s %>.megabytes, :times => 2
+    end
+  <% end %>
+end

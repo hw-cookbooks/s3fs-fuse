@@ -1,0 +1,9 @@
+== S3FS-FUSE on Ubuntu LTS
+
+This cookbook will install s3fs on current Ubuntu LTS release
+taking care of libfuse version issues.
+
+Reference:
+
+http://code.google.com/p/s3fs/issues/detail?id=138
+https://bugs.launchpad.net/ubuntu/lucid/+source/fuse/+bug/634554
