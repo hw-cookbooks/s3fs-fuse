@@ -60,8 +60,8 @@ bash "load_fuse" do
     modprobe fuse
   EOH
   not_if{ 
-    system('lsmod | grep fuse') ||
-    system('cat /boot/config-`uname -r` | grep -P "^CONFIG_FUSE_FS=y$"')
+    system('lsmod | grep fuse > /dev/null') ||
+    system('cat /boot/config-`uname -r` | grep -P "^CONFIG_FUSE_FS=y$" > /dev/null')
   }
 end
 
