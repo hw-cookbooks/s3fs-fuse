@@ -55,17 +55,13 @@ bash "compile_and_install_s3fs" do
   end
 end
 
-bash "add_fuse_module" do
-  code <<-EOH
-    echo "fuse" >> /etc/modules
-  EOH
-  not_if{ %x{cat /etc/modules | grep fuse }.to_s.strip == 'fuse' }
-end
-
 bash "load_fuse" do
   code <<-EOH
     modprobe fuse
   EOH
-  not_if{ %x{lsmod | grep fuse}.to_s.split(/\s+/).first == 'fuse' }
+  not_if{ 
+    system('lsmod | grep fuse') ||
+    system('cat /boot/config-`uname -r` | grep -P "^CONFIG_FUSE_FS=y$"')
+  }
 end
 
