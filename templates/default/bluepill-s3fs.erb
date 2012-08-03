@@ -1,7 +1,7 @@
 Bluepill.application("s3fs") do |app|
   <% @mounted_directories.each do |mount| %>
     app.process("s3fs-<%= mount[:path].gsub('/', '_') %>") do |process|
-      process.pid_file = "/var/run/s3fs/s3fs-<%= mount[:path].gsub('/', '_') %>"
+      process.pid_file = "<%= File.join(@pid_dir, 's3fs', "s3fs-#{mount[:path].gsub('/', '_')}") %>"
       process.working_dir = "/tmp"
       process.start_command "s3fs -f <%= mount[:bucket] %> <%= mount[:path] %> -o " +
         "allow_other,url=https://s3.amazonaws.com,passwd_file=/etc/passwd-s3fs," +
