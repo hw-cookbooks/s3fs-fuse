@@ -11,7 +11,7 @@ template '/etc/passwd-s3fs' do
 end
 
 prereqs = case node.platform_family
-when 'debain'
+when 'debian'
   %w(
     build-essential
     libfuse-dev
