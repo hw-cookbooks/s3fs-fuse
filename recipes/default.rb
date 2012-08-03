@@ -3,12 +3,6 @@
 # Recipe:: default
 #
 
-if(node['s3fs-fuse'][:bluepill])
-  include_recipe "s3fs-fuse::bluepill"
-end
-
-include_recipe "s3fs-fuse::install"
-
 mounted_directories = node['s3fs-fuse'][:mounts]
 if(mounted_directories.is_a?(Hash) || !mounted_directories.respond_to?(:each))
   mounted_directories = [node['s3fs-fuse'][:mounts]].compact
@@ -21,6 +15,11 @@ mounted_directories.each do |mount_point|
   end
 end
 
+include_recipe "s3fs-fuse::install"
+
+if(node['s3fs-fuse'][:bluepill])
+  include_recipe "s3fs-fuse::bluepill"
+end
 
 unless(node['s3fs-fuse'][:bluepill])
   mounted_directories.each do |dir_info|
