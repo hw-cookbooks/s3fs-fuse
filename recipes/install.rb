@@ -10,48 +10,105 @@ template '/etc/passwd-s3fs' do
   )
 end
 
-prereqs = %w(
-  build-essential
-  libfuse-dev
-  fuse-utils
-  libcurl4-openssl-dev
-  libxml2-dev
-  mime-support
-)
+prereqs = case node.platform_family
+when 'debain'
+  %w(
+    build-essential
+    libfuse-dev
+    fuse-utils
+    libcurl4-openssl-dev
+    libxml2-dev
+    mime-support
+  )
+when 'rhel'
+  %w(
+    gcc
+    libstdc++-devel
+    gcc-c++
+    curl-devel
+    libxml2-devel
+    openssl-devel
+    mailcap
+  )
+else
+  raise "Unsupported platform family provided: #{node.platform_family}"
+end
 
 prereqs.each do |prereq_name|
   package prereq_name
 end
 
-s3fs_version = node['s3fs-fuse'][:version]
+# If we're in redhat land and fuse is ancient, update it
+if(node.platform_family == 'rhel')
+  %w(fuse fuse* fuse-devel).each do |pkg_name|
+    package pkg_name do
+      action :remove
+    end
+  end
 
-if(node['s3fs-fuse'][:no_upload])
-  s3fs_version << '-noupload'
-  source_url = 'https://bitbucket.org/chrisroberts/s3fs-no-upload/downloads/s3fs-1.61-noupload.tar.gz'
-else
-  source_url = "http://s3fs.googlecode.com/files/s3fs-#{s3fs_version}.tar.gz"
+  fuse_version = File.basename(node['s3fs-fuse'][:fuse_url]).match(/\d\.\d\.\d/).to_s
+  #TODO: /bin/true is an ugly hack
+  fuse_check = [
+    {'PKG_CONFIG_PATH' => '/usr/lib/pkgconfig:/usr/lib64/pkgconfig'},
+    '/usr/bin/pkg-config',
+    '--modversion',
+    'fuse'
+  ]
+
+  remote_file "/tmp/#{File.basename(node['s3fs-fuse'][:fuse_url])}" do
+    source "#{node['s3fs-fuse'][:fuse_url]}?ts=#{Time.now.to_i}&use_mirror=#{node['s3fs-fuse'][:fuse_mirror]}"
+    action :create_if_missing
+    not_if do
+      IO.popen(fuse_check).readlines.join('').strip == fuse_version
+    end
+  end
+
+  bash "compile_and_install_fuse" do
+    cwd '/tmp'
+    code <<-EOH
+      tar -xzf fuse-#{fuse_version}.tar.gz
+      cd fuse-#{fuse_version}
+      ./configure --prefix=/usr
+      make
+      make install
+      export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib64/pkgconfig
+      ldconfig
+      modprobe fuse
+    EOH
+    not_if do
+      IO.popen(fuse_check).readlines.join('').strip == fuse_version
+    end
+  end
+
 end
+
+s3fs_version = node['s3fs-fuse'][:version]
+source_url = "http://s3fs.googlecode.com/files/s3fs-#{s3fs_version}.tar.gz"
 
 remote_file "/tmp/s3fs-#{s3fs_version}.tar.gz" do
   source source_url
-  action :create
+  action :create_if_missing
 end
 
-# NOTE: Important to note we modify the configure before running
-#       to allow s3fs to build against fuse 2.8.4
 bash "compile_and_install_s3fs" do
   cwd '/tmp'
   code <<-EOH
     tar -xzf s3fs-#{s3fs_version}.tar.gz
     cd s3fs-#{s3fs_version}
-    sed -i 's/fuse >= 2.8.4/fuse >= 2.8.1/g' configure
+    #{'export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib64/pkgconfig' if node.platform_family == 'rhel'}
     ./configure --prefix=/usr/local
     make && make install
   EOH
-  not_if{ %x{s3fs --version}.to_s.split("\n").first.to_s.split.last == s3fs_version.to_s }
-  if(node['s3fs-fuse'][:bluepill])
-    notifies :stop, 'service[s3fs-fuse]'
-    notifies :start, 'service[s3fs-fuse]'
+  not_if do
+    begin
+      %x{s3fs --version}.to_s.split("\n").first.to_s.split.last == s3fs_version.to_s
+    rescue Errno::ENOENT
+      false
+    end
+  end
+  if(node['s3fs-fuse'][:bluepill] && File.exists?(File.join(node[:bluepill][:conf_dir], 's3fs.pill')))
+    notifies :stop, 'bluepill_service[s3fs]'
+    notifies :start, 'bluepill_service[s3fs]'
   end
 end
 
