@@ -3,17 +3,6 @@ S3FS-FUSE
 
 Provides S3FS-FUSE with optional mount monitoring via bluepill.
 
-Important note
---------------
-
-Currently this cookbook is only working on Ubuntu installs. It
-has a fix for the current Ubuntu LTS to work around a FUSE issue
-that was fixed in LTS without the required version increment
-that S3FS-FUSE depends on. More informtion:
-
-http://code.google.com/p/s3fs/issues/detail?id=138
-https://bugs.launchpad.net/ubuntu/lucid/+source/fuse/+bug/634554
-
 Usage
 =====
 
