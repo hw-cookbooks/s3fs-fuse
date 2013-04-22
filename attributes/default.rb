@@ -7,3 +7,4 @@ default['s3fs-fuse'][:bluepill] = false
 default['s3fs-fuse'][:maxmemory] = 100
 default['s3fs-fuse'][:fuse_url] = 'https://downloads.sourceforge.net/project/fuse/fuse-2.X/2.8.4/fuse-2.8.4.tar.gz'
 default['s3fs-fuse'][:fuse_mirror] = 'voxel'
+default['s3fs-fuse'][:packages] = []
