@@ -12,7 +12,7 @@ override_attributes(
     :s3_key => 'key',
     :s3_secret => 'secret',
     :mounts => [
-      {:bucket => 'my-bucket', :path => '/mount/path', :tmp_dir => '/tmp/cache'}
+      {:bucket => 'my-bucket', :path => '/mount/path', :tmp_store => '/tmp/cache'}
     ],
     :bluepill => true,
     :maxmemory => 50
