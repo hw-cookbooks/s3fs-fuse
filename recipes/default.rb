@@ -12,6 +12,7 @@ mounted_directories.each do |mount_point|
   directory mount_point[:path] do
     recursive true
     action :create
+	not_if { File.directory? mount_point[:path] }
   end
 end
 
