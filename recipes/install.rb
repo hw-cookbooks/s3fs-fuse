@@ -34,6 +34,8 @@ else
   raise "Unsupported platform family provided: #{node.platform_family}"
 end
 
+prereqs = node['s3fs-fuse'][:packages] unless node['s3fs-fuse'][:packages].empty?
+
 prereqs.each do |prereq_name|
   package prereq_name
 end
