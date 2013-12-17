@@ -1,3 +1,4 @@
+default['s3fs-fuse'][:s3_url] = 'https://s3.amazonaws.com'
 default['s3fs-fuse'][:s3_key] = ''
 default['s3fs-fuse'][:s3_secret] = ''
 default['s3fs-fuse'][:version] = '1.61'
