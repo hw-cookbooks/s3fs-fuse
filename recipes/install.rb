@@ -5,8 +5,8 @@
 
 template '/etc/passwd-s3fs' do
   variables(
-    :s3_key => node['s3fs-fuse'][:s3_key],
-    :s3_secret => node['s3fs-fuse'][:s3_secret]
+    :s3_key => node[:s3fs_fuse][:s3_key],
+    :s3_secret => node[:s3fs_fuse][:s3_secret]
   )
 end
 
@@ -34,7 +34,7 @@ else
   raise "Unsupported platform family provided: #{node.platform_family}"
 end
 
-prereqs = node['s3fs-fuse'][:packages] unless node['s3fs-fuse'][:packages].empty?
+prereqs = node[:s3fs_fuse][:packages] unless node[:s3fs_fuse][:packages].empty?
 
 prereqs.each do |prereq_name|
   package prereq_name
@@ -48,7 +48,7 @@ if(node.platform_family == 'rhel')
     end
   end
 
-  fuse_version = File.basename(node['s3fs-fuse'][:fuse_url]).match(/\d\.\d\.\d/).to_s
+  fuse_version = File.basename(node[:s3fs_fuse][:fuse_url]).match(/\d\.\d\.\d/).to_s
   #TODO: /bin/true is an ugly hack
   fuse_check = [
     {'PKG_CONFIG_PATH' => '/usr/lib/pkgconfig:/usr/lib64/pkgconfig'},
@@ -57,8 +57,8 @@ if(node.platform_family == 'rhel')
     'fuse'
   ]
 
-  remote_file "/tmp/#{File.basename(node['s3fs-fuse'][:fuse_url])}" do
-    source "#{node['s3fs-fuse'][:fuse_url]}?ts=#{Time.now.to_i}&use_mirror=#{node['s3fs-fuse'][:fuse_mirror]}"
+  remote_file "/tmp/#{File.basename(node[:s3fs_fuse][:fuse_url])}" do
+    source "#{node[:s3fs_fuse][:fuse_url]}?ts=#{Time.now.to_i}&use_mirror=#{node[:s3fs_fuse][:fuse_mirror]}"
     action :create_if_missing
     not_if do
       IO.popen(fuse_check).readlines.join('').strip == fuse_version
@@ -84,7 +84,7 @@ if(node.platform_family == 'rhel')
 
 end
 
-s3fs_version = node['s3fs-fuse'][:version]
+s3fs_version = node[:s3fs_fuse][:version]
 source_url = "http://s3fs.googlecode.com/files/s3fs-#{s3fs_version}.tar.gz"
 
 remote_file "/tmp/s3fs-#{s3fs_version}.tar.gz" do
@@ -108,7 +108,7 @@ bash "compile_and_install_s3fs" do
       false
     end
   end
-  if(node['s3fs-fuse'][:bluepill] && File.exists?(File.join(node[:bluepill][:conf_dir], 's3fs.pill')))
+  if(node[:s3fs_fuse][:bluepill] && File.exists?(File.join(node[:bluepill][:conf_dir], 's3fs.pill')))
     notifies :stop, 'bluepill_service[s3fs]'
     notifies :start, 'bluepill_service[s3fs]'
   end
@@ -118,9 +118,8 @@ bash "load_fuse" do
   code <<-EOH
     modprobe fuse
   EOH
-  not_if{ 
+  not_if{
     system('lsmod | grep fuse > /dev/null') ||
     system('cat /boot/config-`uname -r` | grep -P "^CONFIG_FUSE_FS=y$" > /dev/null')
   }
 end
-

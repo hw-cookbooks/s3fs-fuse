@@ -11,9 +11,9 @@ if(File.exists?('/etc/init/s3fs-fuse.conf'))
   end
 end
 
-mounted_directories = node['s3fs-fuse'][:mounts]
+mounted_directories = node[:s3fs_fuse][:mounts]
 if(mounted_directories.is_a?(Hash) || !mounted_directories.respond_to?(:each))
-  mounted_directories = [node['s3fs-fuse'][:mounts]].compact
+  mounted_directories = [node[:s3fs_fuse][:mounts]].compact
 end
 
 execute 's3fs[bluepill-forced-load]' do
@@ -25,7 +25,7 @@ template File.join(node[:bluepill][:conf_dir], 's3fs.pill') do
   source "bluepill-s3fs.erb"
   variables(
     :mounted_directories => mounted_directories,
-    :maxmemory => node['s3fs-fuse'][:maxmemory],
+    :maxmemory => node[:s3fs_fuse][:maxmemory],
     :pid_dir => File.join(node[:bluepill][:pid_dir], 'pids')
   )
   notifies :run, resources(:execute => 's3fs[bluepill-forced-load]'), :immediately
