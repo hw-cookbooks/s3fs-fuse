@@ -5,6 +5,7 @@ default[:s3fs_fuse][:version] = '1.61'
 default[:s3fs_fuse][:no_upload] = false
 default[:s3fs_fuse][:mounts] = []
 default[:s3fs_fuse][:bluepill] = false
+default[:s3fs_fuse][:rc_mon] = false
 default[:s3fs_fuse][:maxmemory] = 100
 default[:s3fs_fuse][:fuse_url] = 'https://downloads.sourceforge.net/project/fuse/fuse-2.X/2.8.4/fuse-2.8.4.tar.gz'
 default[:s3fs_fuse][:fuse_mirror] = 'voxel'
