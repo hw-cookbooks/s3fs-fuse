@@ -12,7 +12,7 @@ node[:s3fs_fuse][:mounts].each do |mount|
   end
   mount_command << mount[:read_only] ? 'ro' : 'rw'
 
-  rc_mon_service "s3fs-#{mount[:path].gsub('/', '-')}" do
+  rc_mon_service "s3fs#{mount[:path].gsub('/', '-')}" do
     start_command mount_command.join(',')
     stop_command "umount #{mount[:path]}"
     memory_limit "#{mount[:maxmemory]}M"
