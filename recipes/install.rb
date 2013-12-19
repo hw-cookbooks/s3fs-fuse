@@ -8,6 +8,7 @@ template '/etc/passwd-s3fs' do
     :s3_key => node[:s3fs_fuse][:s3_key],
     :s3_secret => node[:s3fs_fuse][:s3_secret]
   )
+  mode 0600
 end
 
 prereqs = case node.platform_family
