@@ -30,6 +30,9 @@ when 'rhel'
     libxml2-devel
     openssl-devel
     mailcap
+    fuse
+    fuse-devel
+    fuse-libs
   )
 else
   raise "Unsupported platform family provided: #{node.platform_family}"
@@ -39,50 +42,6 @@ prereqs = node[:s3fs_fuse][:packages] unless node[:s3fs_fuse][:packages].empty?
 
 prereqs.each do |prereq_name|
   package prereq_name
-end
-
-# If we're in redhat land and fuse is ancient, update it
-if(node.platform_family == 'rhel')
-  %w(fuse fuse* fuse-devel).each do |pkg_name|
-    package pkg_name do
-      action :remove
-    end
-  end
-
-  fuse_version = File.basename(node[:s3fs_fuse][:fuse_url]).match(/\d\.\d\.\d/).to_s
-  #TODO: /bin/true is an ugly hack
-  fuse_check = [
-    {'PKG_CONFIG_PATH' => '/usr/lib/pkgconfig:/usr/lib64/pkgconfig'},
-    '/usr/bin/pkg-config',
-    '--modversion',
-    'fuse'
-  ]
-
-  remote_file "/tmp/#{File.basename(node[:s3fs_fuse][:fuse_url])}" do
-    source "#{node[:s3fs_fuse][:fuse_url]}?ts=#{Time.now.to_i}&use_mirror=#{node[:s3fs_fuse][:fuse_mirror]}"
-    action :create_if_missing
-    not_if do
-      IO.popen(fuse_check).readlines.join('').strip == fuse_version
-    end
-  end
-
-  bash "compile_and_install_fuse" do
-    cwd '/tmp'
-    code <<-EOH
-      tar -xzf fuse-#{fuse_version}.tar.gz
-      cd fuse-#{fuse_version}
-      ./configure --prefix=/usr
-      make
-      make install
-      export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib64/pkgconfig
-      ldconfig
-      modprobe fuse
-    EOH
-    not_if do
-      IO.popen(fuse_check).readlines.join('').strip == fuse_version
-    end
-  end
-
 end
 
 s3fs_version = node[:s3fs_fuse][:version]
