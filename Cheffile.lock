@@ -1,0 +1,30 @@
+SITE
+  remote: https://supermarket.getchef.com/api/v1
+  specs:
+    bluepill (2.3.1)
+      rsyslog (>= 0.0.0)
+    build-essential (2.0.6)
+    control_groups (0.1.6)
+    rc_mon (0.2.0)
+      control_groups (>= 0.0.0)
+      runit (>= 0.0.0)
+    rsyslog (1.12.2)
+    runit (1.5.10)
+      build-essential (>= 0.0.0)
+      yum (~> 3.0)
+      yum-epel (>= 0.0.0)
+    yum (3.3.2)
+    yum-epel (0.5.1)
+      yum (~> 3.0)
+
+PATH
+  remote: .
+  specs:
+    s3fs-fuse (0.1.4)
+      rc_mon (>= 0.0.0)
+
+DEPENDENCIES
+  bluepill (>= 0)
+  rc_mon (>= 0)
+  s3fs-fuse (>= 0)
+

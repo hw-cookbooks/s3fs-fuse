@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+site 'https://supermarket.getchef.com/api/v1'
+
+cookbook 's3fs-fuse', path: '.'
+
+cookbook 'rc_mon'
+cookbook 'bluepill'
