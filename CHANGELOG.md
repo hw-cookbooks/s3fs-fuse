@@ -1,3 +1,7 @@
+v0.1.4
+------
+* Updates for modern RHEL versions where fuse is finally reasonable
+
 v0.1.0
 ------
 * NOTE: Breaking change - attribute naming change
