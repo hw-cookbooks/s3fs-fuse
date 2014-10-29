@@ -69,7 +69,7 @@ bash "compile_and_install_s3fs" do
       false
     end
   end
-  if(node[:s3fs_fuse][:bluepill] && File.exists?(File.join(node[:bluepill][:conf_dir], 's3fs.pill')))
+  if(node[:s3fs_fuse][:bluepill] && File.exists?(File.join(node[:s3fs_fuse][:bluepill][:conf_dir], 's3fs.pill')))
     notifies :stop, 'bluepill_service[s3fs]'
     notifies :start, 'bluepill_service[s3fs]'
   end
