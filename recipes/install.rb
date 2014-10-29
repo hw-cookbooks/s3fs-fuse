@@ -58,6 +58,7 @@ bash "compile_and_install_s3fs" do
     tar -xzf s3fs-#{s3fs_version}.tar.gz -C ./s3fs-#{s3fs_version}
     cd ./s3fs-#{s3fs_version}/*
     #{'export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib64/pkgconfig' if node.platform_family == 'rhel'}
+    ./autogen.sh
     ./configure --prefix=/usr/local
     make && make install
   EOH
