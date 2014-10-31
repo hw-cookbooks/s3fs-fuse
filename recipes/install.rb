@@ -21,7 +21,7 @@ case node.platform_family
     )
     # As of Ubuntu 14.04 "fuse-utils" has been merged into package "fuse"
     # so try to install both (auto-installed by fuse-utils in older)
-    %x(apt-cache show fuse-utils >> /dev/null)
+    %x(apt-cache show fuse-utils 2>&1 1>/dev/null)
     if( $? == 0 ) then
       prereqs.push( 'fuse-utils' )
     else
