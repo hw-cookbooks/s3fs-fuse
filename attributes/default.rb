@@ -9,3 +9,5 @@ default[:s3fs_fuse][:rc_mon] = false
 default[:s3fs_fuse][:maxmemory] = 100
 default[:s3fs_fuse][:fuse_mirror] = 'voxel'
 default[:s3fs_fuse][:packages] = []
+default[:s3fs_fuse][:force_install] = false
+default[:s3fs_fuse][:version_file] = '/etc/s3fs_fuse_version'

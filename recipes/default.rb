@@ -16,7 +16,38 @@ mounted_directories.each do |mount_point|
   end
 end
 
-include_recipe "s3fs-fuse::install"
+def s3fs_fuse_installed()
+
+  # Is s3fs installed?
+  if !`which s3fs`.empty? && $? == 0
+    return true # No
+  end
+
+  return false # Yes
+end
+
+def s3fs_fuse_diff_version( check_against )
+
+  if !s3fs_fuse_installed()
+    return true
+  end
+
+  if File.exists?( node[:s3fs_fuse][:version_file] )
+    installed_version = File.open( node[:s3fs_fuse][:version_file], &:gets )
+    if installed_version.empty? || installed_version != check_against
+      # Not properly installed by this script or version is different
+      return true
+    end
+  end
+
+  # s3fs is installed and is the correct version
+  return false
+end
+
+# Should I run install?
+if node[:s3fs_fuse][:force_install] || s3fs_fuse_diff_version( node[:s3fs_fuse][:version] )
+  include_recipe "s3fs-fuse::install"
+end
 
 if(node[:s3fs_fuse][:bluepill])
   include_recipe 's3fs-fuse::bluepill'
