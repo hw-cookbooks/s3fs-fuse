@@ -85,11 +85,6 @@ bash "load_fuse" do
   }
 end
 
-ruby_block 's3fs_fuse_post_install' do
-  block do
-    if s3fs_fuse_installed()
-      `echo "#{node[:s3fs_fuse][:version]}" > #{node[:s3fs_fuse][:version_file]}`
-    end
-  end
-  action :run
+template node[:s3fs_fuse][:version_file] do
+  mode 0655
 end
