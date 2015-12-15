@@ -44,19 +44,28 @@ prereqs.each do |prereq_name|
   package prereq_name
 end
 
-s3fs_version = node[:s3fs_fuse][:version]
-source_url = "http://s3fs.googlecode.com/files/s3fs-#{s3fs_version}.tar.gz"
+# s3fs_version = node[:s3fs_fuse][:version]
+# source_url = "http://s3fs.googlecode.com/files/s3fs-#{s3fs_version}.tar.gz"
+#
+# remote_file "/tmp/s3fs-#{s3fs_version}.tar.gz" do
+#   source source_url
+#   action :create_if_missing
+# end
 
-remote_file "/tmp/s3fs-#{s3fs_version}.tar.gz" do
-  source source_url
-  action :create_if_missing
+git 's3fs-fuse_github' do
+  repository 'https://github.com/s3fs-fuse/s3fs-fuse.git'
+  revision node[:s3fs_fuse][:version]
+  destination '/tmp'
+  retries 3
+  timeout 60
+  action :sync
 end
 
 bash "compile_and_install_s3fs" do
   cwd '/tmp'
   code <<-EOH
-    tar -xzf s3fs-#{s3fs_version}.tar.gz
-    cd s3fs-#{s3fs_version}
+    # tar -xzf s3fs-#{s3fs_version}.tar.gz
+    cd s3fs-fuse
     #{'export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib64/pkgconfig' if node.platform_family == 'rhel'}
     ./configure --prefix=/usr/local
     make && make install
