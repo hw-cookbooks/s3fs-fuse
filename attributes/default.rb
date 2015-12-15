@@ -1,7 +1,7 @@
 default[:s3fs_fuse][:s3_url] = 'https://s3.amazonaws.com'
 default[:s3fs_fuse][:s3_key] = ''
 default[:s3fs_fuse][:s3_secret] = ''
-default[:s3fs_fuse][:version] = '1.61'
+default[:s3fs_fuse][:version] = 'v1.79'
 default[:s3fs_fuse][:no_upload] = false
 default[:s3fs_fuse][:mounts] = []
 default[:s3fs_fuse][:bluepill] = false

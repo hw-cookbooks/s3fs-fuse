@@ -44,23 +44,49 @@ prereqs.each do |prereq_name|
   package prereq_name
 end
 
-s3fs_version = node[:s3fs_fuse][:version]
-source_url = "http://s3fs.googlecode.com/files/s3fs-#{s3fs_version}.tar.gz"
+s3fs_git_tag = node[:s3fs_fuse][:version]
+s3fs_version = node[:s3fs_fuse][:version].tr('^0-9.','')
 
-remote_file "/tmp/s3fs-#{s3fs_version}.tar.gz" do
+puts s3fs_version.to_f.to_s
+
+if s3fs_version.to_f >= 1.74
+  source_url = "https://github.com/s3fs-fuse/s3fs-fuse/tarball/tags/#{s3fs_git_tag}"
+else
+  source_url = "http://s3fs.googlecode.com/files/s3fs-#{s3fs_git_tag}.tar.gz"
+end
+
+
+remote_file "/tmp/s3fs-#{s3fs_git_tag}.tar.gz" do
   source source_url
   action :create_if_missing
 end
 
+directory "/tmp/s3fs-#{s3fs_git_tag}" do
+  mode 0755
+  action :create
+end
+
+
 bash "compile_and_install_s3fs" do
   cwd '/tmp'
-  code <<-EOH
-    tar -xzf s3fs-#{s3fs_version}.tar.gz
-    cd s3fs-#{s3fs_version}
-    #{'export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib64/pkgconfig' if node.platform_family == 'rhel'}
-    ./configure --prefix=/usr/local
-    make && make install
-  EOH
+  if s3fs_version.to_f >= 1.74 # Added ./autogen.sh
+    code <<-EOH
+      tar -xzf s3fs-#{s3fs_git_tag}.tar.gz -C s3fs-#{s3fs_git_tag} --strip-components 1
+      cd s3fs-#{s3fs_git_tag}
+      #{'export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib64/pkgconfig' if node.platform_family == 'rhel'}
+      ./autogen.sh
+      ./configure --prefix=/usr/local
+      make && make install
+    EOH
+  else
+    code <<-EOH
+      tar -xzf s3fs-#{s3fs_git_tag}.tar.gz -C s3fs-#{s3fs_git_tag} --strip-components 1
+      cd s3fs-#{s3fs_git_tag}
+      #{'export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib64/pkgconfig' if node.platform_family == 'rhel'}
+      ./configure --prefix=/usr/local
+      make && make install
+    EOH
+  end
   not_if do
     begin
       %x{s3fs --version}.to_s.split("\n").first.to_s.split.last == s3fs_version.to_s
