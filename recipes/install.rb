@@ -53,8 +53,8 @@ s3fs_version = node[:s3fs_fuse][:version]
 # end
 
 git 's3fs-fuse_github' do
-  repository 'https://github.com/s3fs-fuse/s3fs-fuse.git'
-  revision "tags/v#{s3fs_version}"
+  repository 'git@github.com:s3fs-fuse/s3fs-fuse.git'
+  revision "v#{s3fs_version}"
   destination '/tmp'
   retries 3
   timeout 60
