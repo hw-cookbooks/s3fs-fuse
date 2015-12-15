@@ -44,17 +44,19 @@ prereqs.each do |prereq_name|
   package prereq_name
 end
 
-s3fs_version = node[:s3fs_fuse][:version]
+s3fs_git_tag         = node[:s3fs_fuse][:version]
 s3fs_numeric_version = node[:s3fs_fuse][:version].tr('^A-Za-z','')
 
+puts s3fs_numeric_version.to_f.to_s
+
 if s3fs_numeric_version.to_f >= 1.74
-  source_url = "https://github.com/s3fs-fuse/s3fs-fuse/tarball/tags/#{s3fs_version}"
+  source_url = "https://github.com/s3fs-fuse/s3fs-fuse/tarball/tags/#{s3fs_git_tag}"
 else
-  source_url = "http://s3fs.googlecode.com/files/s3fs-#{s3fs_version}.tar.gz"
+  source_url = "http://s3fs.googlecode.com/files/s3fs-#{s3fs_git_tag}.tar.gz"
 end
 
 
-remote_file "/tmp/s3fs-#{s3fs_version}.tar.gz" do
+remote_file "/tmp/s3fs-#{s3fs_git_tag}.tar.gz" do
   source source_url
   action :create_if_missing
 end
@@ -62,9 +64,9 @@ end
 bash "compile_and_install_s3fs" do
   cwd '/tmp'
   code <<-EOH
-    mkdir s3fs-#{s3fs_version}
-    tar -xzf s3fs-#{s3fs_version}.tar.gz -C s3fs-#{s3fs_version} --strip-components 1
-    cd s3fs-#{s3fs_version}
+    mkdir s3fs-#{s3fs_git_tag}
+    tar -xzf s3fs-#{s3fs_git_tag}.tar.gz -C s3fs-#{s3fs_git_tag} --strip-components 1
+    cd s3fs-#{s3fs_git_tag}
     #{'export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib64/pkgconfig' if node.platform_family == 'rhel'}
     ./configure --prefix=/usr/local
     make && make install
