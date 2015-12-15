@@ -53,10 +53,9 @@ s3fs_numeric_version = node[:s3fs_fuse][:version].tr('^A-Za-z','')
 #   action :create_if_missing
 # end
 
-git 's3fs-fuse_github' do
-  repository 'git://github.com/s3fs-fuse/s3fs-fuse.git'
+git '/tmp/s3fs-fuse' do
+  repository 'git@github.com:s3fs-fuse/s3fs-fuse.git'
   revision node[:s3fs_fuse][:version]
-  destination '/tmp'
   retries 3
   timeout 60
   action :sync
