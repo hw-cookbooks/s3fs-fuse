@@ -9,6 +9,7 @@ Usage
 ```ruby
 override_attributes(
   's3fs-fuse' => {
+    :version => 'v1.79'
     :s3_key => 'key',
     :s3_secret => 'secret',
     :mounts => [
@@ -22,6 +23,8 @@ override_attributes(
 Multiple buckets can be mounted (which is why the `:mounts` attribute is an Array
 of Hashes). Bluepill monitoring is optional and the maxmemory allows bluepill
 to kill off and remount any s3 mounts that misbehave.
+
+It uses the github tags from https://github.com/s3fs-fuse/s3fs-fuse
 
 Note: Bluepill should be considered for any s3fs built bucket that has large number
 of entries within directories. Running an `ls` on these directories will cause the
