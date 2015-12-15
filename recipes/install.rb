@@ -45,7 +45,7 @@ prereqs.each do |prereq_name|
 end
 
 s3fs_git_tag         = node[:s3fs_fuse][:version]
-s3fs_numeric_version = node[:s3fs_fuse][:version].tr('^A-Za-z','')
+s3fs_numeric_version = node[:s3fs_fuse][:version].tr('^0-9','')
 
 puts s3fs_numeric_version.to_f.to_s
 
