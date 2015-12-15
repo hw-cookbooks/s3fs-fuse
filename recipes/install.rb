@@ -64,7 +64,6 @@ end
 bash "compile_and_install_s3fs" do
   cwd '/tmp'
   code <<-EOH
-    # tar -xzf s3fs-#{s3fs_version}.tar.gz
     cd s3fs-fuse
     #{'export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib64/pkgconfig' if node.platform_family == 'rhel'}
     ./configure --prefix=/usr/local
