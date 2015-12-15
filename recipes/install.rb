@@ -44,7 +44,7 @@ prereqs.each do |prereq_name|
   package prereq_name
 end
 
-# s3fs_version = node[:s3fs_fuse][:version]
+s3fs_version = node[:s3fs_fuse][:version]
 # source_url = "http://s3fs.googlecode.com/files/s3fs-#{s3fs_version}.tar.gz"
 #
 # remote_file "/tmp/s3fs-#{s3fs_version}.tar.gz" do
@@ -54,7 +54,7 @@ end
 
 git 's3fs-fuse_github' do
   repository 'https://github.com/s3fs-fuse/s3fs-fuse.git'
-  revision node[:s3fs_fuse][:version]
+  revision s3fs_version
   destination '/tmp'
   retries 3
   timeout 60
