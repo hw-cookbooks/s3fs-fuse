@@ -69,11 +69,11 @@ end
 
 bash "compile_and_install_s3fs" do
   cwd '/tmp'
-  if s3fs_version.to_f >= 1.74
+  if s3fs_version.to_f >= 1.75 # Added ./autogen.sh here according to docs
     code <<-EOH
       tar -xzf s3fs-#{s3fs_git_tag}.tar.gz -C s3fs-#{s3fs_git_tag} --strip-components 1
       cd s3fs-#{s3fs_git_tag}
-    #{'export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib64/pkgconfig' if node.platform_family == 'rhel'}
+      #{'export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib64/pkgconfig' if node.platform_family == 'rhel'}
       ./autogen.sh
       ./configure --prefix=/usr/local
       make && make install
