@@ -45,7 +45,7 @@ prereqs.each do |prereq_name|
 end
 
 
-s3fs_version = node[:s3fs_fuse][:version].tr('^A-Za-z','')
+s3fs_numeric_version = node[:s3fs_fuse][:version].tr('^A-Za-z','')
 # source_url = "http://s3fs.googlecode.com/files/s3fs-#{s3fs_version}.tar.gz"
 #
 # remote_file "/tmp/s3fs-#{s3fs_version}.tar.gz" do
@@ -72,7 +72,7 @@ bash "compile_and_install_s3fs" do
   EOH
   not_if do
     begin
-      %x{s3fs --version}.to_s.split("\n").first.to_s.split.last == s3fs_version.to_s
+      %x{s3fs --version}.to_s.split("\n").first.to_s.split.last == s3fs_numeric_version.to_s
     rescue Errno::ENOENT
       false
     end
