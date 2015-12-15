@@ -61,10 +61,15 @@ remote_file "/tmp/s3fs-#{s3fs_git_tag}.tar.gz" do
   action :create_if_missing
 end
 
+directory "/tmp/s3fs-#{s3fs_git_tag}" do
+  mode 0755
+  action :create
+end
+
+
 bash "compile_and_install_s3fs" do
   cwd '/tmp'
   code <<-EOH
-    mkdir s3fs-#{s3fs_git_tag}
     tar -xzf s3fs-#{s3fs_git_tag}.tar.gz -C s3fs-#{s3fs_git_tag} --strip-components 1
     cd s3fs-#{s3fs_git_tag}
     #{'export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib64/pkgconfig' if node.platform_family == 'rhel'}
