@@ -8,7 +8,7 @@ Usage
 
 ```ruby
 override_attributes(
-  's3fs-fuse' => {
+  's3fs_fuse' => {
     :s3_key => 'key',
     :s3_secret => 'secret',
     :mounts => [
