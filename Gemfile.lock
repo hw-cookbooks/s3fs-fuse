@@ -90,7 +90,7 @@ GEM
     method_source (0.8.2)
     mime-types (1.25.1)
     mini_portile2 (2.4.0)
-    minitar (0.5.4)
+    minitar (0.9)
     mixlib-authentication (1.3.0)
       mixlib-log
     mixlib-cli (1.5.0)
