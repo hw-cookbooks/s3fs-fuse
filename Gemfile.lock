@@ -166,7 +166,7 @@ GEM
     treetop (1.5.3)
       polyglot (~> 0.3)
     wmi-lite (1.0.0)
-    yajl-ruby (1.2.1)
+    yajl-ruby (1.4.2)
 
 PLATFORMS
   ruby
